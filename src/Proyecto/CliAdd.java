@@ -6,12 +6,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -19,26 +13,25 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.Statement;
-
-import BD.Conexion;
 import BD.SqlUsuarios;
 import Clases.CatAdd;
+import Clases.Cliente;
 
-import javax.swing.JTextPane;
+import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import javax.swing.JTable;
+import javax.swing.JTextField;
 
-public class RepCliVen extends JFrame {
+public class CliAdd extends JFrame {
 
 	private JPanel contentPane;
-	private JTable table;
+	private JTextField NameTF;
+	private JTextField CelularTF;
+	private JTextField DireccionTF;
 
 	/**
 	 * Launch the application.
@@ -47,7 +40,7 @@ public class RepCliVen extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RepCliVen frame = new RepCliVen();
+					CliAdd frame = new CliAdd();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -59,14 +52,16 @@ public class RepCliVen extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public RepCliVen() {
+	public CliAdd() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 585, 468);
+		setBounds(100, 100, 888, 571);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(123, 104, 238));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+
 		
 		JLabel lblNewLabel_1 = new JLabel("");
 		lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\ignac\\OneDrive\\Desktop\\Universidad\\Programacion 2\\Proyecto\\123.png"));
@@ -214,7 +209,13 @@ public class RepCliVen extends JFrame {
 			}
 		});
 		mnNewMenu_4.add(mntmNewMenuItem_11);
-		
+		JMenuItem mntmNewMenuItem_15 = new JMenuItem("Generar Venta");
+		mntmNewMenuItem_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallVenta();
+			}
+		});
+		mnNewMenu_4.add(mntmNewMenuItem_15);
 		JMenuItem mntmNewMenuItem_12 = new JMenuItem("Agregar Usuarios");
 		mntmNewMenuItem_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -223,50 +224,66 @@ public class RepCliVen extends JFrame {
 		});
 		mnNewMenu_4.add(mntmNewMenuItem_12);
 		
-		BufferedReader w;
-		int usuario = 0;
-		try {
-			w = new BufferedReader(new FileReader("user.txt"));
-			usuario = Integer.parseInt(w.readLine());
-		} catch (NumberFormatException | IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		JPanel panel = new JPanel();
+		panel.setLayout(null);
+		panel.setBackground(new Color(255, 255, 224));
+		panel.setBounds(60, 201, 739, 310);
+		contentPane.add(panel);
 		
-		JLabel lbl = new JLabel("");
-		lbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lbl.setBounds(111, 377, 365, 41);
-		contentPane.add(lbl);
+		JLabel lblNewLabel_2_2 = new JLabel("Nombre:");
+		lblNewLabel_2_2.setFont(new Font("Times New Roman", Font.PLAIN, 17));
+		lblNewLabel_2_2.setBounds(93, 80, 86, 22);
+		panel.add(lblNewLabel_2_2);
 		
-		table = new JTable();
-		table.setBounds(111, 210, 371, 154);
-		contentPane.add(table);
+		NameTF = new JTextField();
+		NameTF.setBounds(242, 81, 208, 22);
+		panel.add(NameTF);
+		NameTF.setColumns(10);
 		
-		Connection con = Conexion.getConexion();
-		Statement st;
-		String sql = "select distinct a.Nombre from Cliente a, Ventas b where b.idEmpleado = "+usuario;
+		JLabel lblNewLabel_2_2_1 = new JLabel("Celular:");
+		lblNewLabel_2_2_1.setFont(new Font("Times New Roman", Font.PLAIN, 17));
+		lblNewLabel_2_2_1.setBounds(93, 208, 86, 22);
+		panel.add(lblNewLabel_2_2_1);
 		
-		DefaultTableModel model = new DefaultTableModel();
-		int c=0;
-		model.addColumn("Cliente");
-		table.setModel(model);
-		String []dato = new String[1];
-		try {
-			st = (Statement) con.createStatement();
-			ResultSet result = st.executeQuery(sql);
-			while(result.next()) {
-				dato[0]=result.getString(1);
-				model.addRow(dato);
-				c++;
+		CelularTF = new JTextField();
+		CelularTF.setColumns(10);
+		CelularTF.setBounds(242, 209, 208, 22);
+		panel.add(CelularTF);
+		
+		JButton Clibtn = new JButton("Agregar Cliente");
+		Clibtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SqlUsuarios modsql = new SqlUsuarios();
+				Cliente mod = new Cliente();
+				
+				mod.setNombre(NameTF.getText());
+				mod.setDireccion(DireccionTF.getText());
+				mod.setCelular(Integer.parseInt(CelularTF.getText()));
+				if(modsql.RegCli(mod)) {
+					JOptionPane.showMessageDialog(null, "Cliente Agregado Exitosamente", "Done",
+							JOptionPane.INFORMATION_MESSAGE);
+					NameTF.setText("");
+					DireccionTF.setText("");
+					CelularTF.setText("");
+				}else {
+					JOptionPane.showMessageDialog(null, "Error al Guardar", "Verifique", JOptionPane.ERROR_MESSAGE);
+				}
 			}
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		String Num = Integer.toString(c);
-		lbl.setText(Num+" Clientes para el empleado "+usuario);
+		});
+		Clibtn.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		Clibtn.setBounds(490, 132, 174, 39);
+		panel.add(Clibtn);
+		
+		JLabel lblNewLabel_2_2_2 = new JLabel("Direccion:");
+		lblNewLabel_2_2_2.setFont(new Font("Times New Roman", Font.PLAIN, 17));
+		lblNewLabel_2_2_2.setBounds(93, 138, 86, 22);
+		panel.add(lblNewLabel_2_2_2);
+		
+		DireccionTF = new JTextField();
+		DireccionTF.setColumns(10);
+		DireccionTF.setBounds(242, 139, 208, 22);
+		panel.add(DireccionTF);
 	}
-
 	void CallProdAdd() {
 		ProdAdd obj = new ProdAdd();
 		this.setVisible(false);
@@ -356,6 +373,13 @@ public class RepCliVen extends JFrame {
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
+	}
+	void CallVenta() {
+		Venta obj = new Venta();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
 	}
 	void CallCliUpd() {
 		CliUpd obj = new CliUpd();

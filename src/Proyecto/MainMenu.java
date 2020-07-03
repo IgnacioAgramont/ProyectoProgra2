@@ -16,6 +16,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.awt.event.ActionEvent;
 
 public class MainMenu extends JFrame {
@@ -34,6 +37,7 @@ public class MainMenu extends JFrame {
 				try {
 					MainMenu frame = new MainMenu();
 					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -45,6 +49,8 @@ public class MainMenu extends JFrame {
 	 * Create the frame.
 	 */
 	public MainMenu() {
+		setTitle("Gestion de Inventario");
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 638, 482);
 		contentPane = new JPanel();
@@ -52,6 +58,7 @@ public class MainMenu extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		this.setLocationRelativeTo(null);
 
 		JLabel lblNewLabel = new JLabel("Marca & Mercadeo");
 		lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 27));
@@ -75,7 +82,7 @@ public class MainMenu extends JFrame {
 
 		JLabel lblNewLabel_1 = new JLabel("");
 		lblNewLabel_1.setIcon(
-				new ImageIcon("C:\\Users\\ignac\\OneDrive\\Desktop\\Universidad\\Programacion 2\\Proyecto\\123.png"));
+				new ImageIcon("C:\\Users\\ignac\\eclipse-workspace\\Proyecto\\src\\Proyecto\\123.png"));
 		lblNewLabel_1.setBounds(66, 39, 98, 113);
 		contentPane.add(lblNewLabel_1);
 
@@ -92,21 +99,29 @@ public class MainMenu extends JFrame {
 		JButton btnNewButton = new JButton("Ingresar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
+				
 				SqlUsuarios modSql = new SqlUsuarios();
 				Usuario mod = new Usuario();
 
 				String pass = new String(PassTF.getPassword());
 
 				String nuevoPass = HidePass.sha1(pass);
-
-				mod.setUsuario(UserTF.getText());
+				int usuario = Integer.parseInt(UserTF.getText());
+				mod.setIdUsuario(usuario);
 				mod.setPassword(nuevoPass);
-
+				
 				if (modSql.login(mod)) {
+					try {
+						PrintWriter w = new PrintWriter(new FileWriter("user.txt"));
+						w.println(mod.getIdUsuario());
+						w.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					callmenu();
 				} else {
 					JOptionPane.showMessageDialog(null, "Datos erroneos");
+					PassTF.setText("");
 				}
 
 			}

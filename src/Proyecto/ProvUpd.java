@@ -6,6 +6,10 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -15,6 +19,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import BD.SqlUsuarios;
+import Clases.CatAdd;
+
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -44,7 +52,7 @@ public class ProvUpd extends JFrame {
 	 */
 	public ProvUpd() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 888, 548);
+		setBounds(100, 100, 668, 492);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(123, 104, 238));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,6 +73,7 @@ public class ProvUpd extends JFrame {
 		lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 27));
 		lblNewLabel.setBounds(228, 86, 248, 41);
 		contentPane.add(lblNewLabel);
+		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBounds(0, 0, 870, 26);
 		contentPane.add(menuBar);
@@ -73,6 +82,11 @@ public class ProvUpd extends JFrame {
 		menuBar.add(mnNewMenu);
 		
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Agregar Productos");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallProdAdd();
+			}
+		});
 		mnNewMenu.add(mntmNewMenuItem_2);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("Buscar Productos");
@@ -111,7 +125,6 @@ public class ProvUpd extends JFrame {
 		mnNewMenu_1.add(mntmNewMenuItem_4);
 		
 		JMenuItem mntmNewMenuItem_5 = new JMenuItem("Actualizar Proveedores");
-		mntmNewMenuItem_5.setEnabled(false);
 		mntmNewMenuItem_5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CallProvUpd();
@@ -119,16 +132,33 @@ public class ProvUpd extends JFrame {
 		});
 		mnNewMenu_1.add(mntmNewMenuItem_5);
 		
-		JMenu mnNewMenu_2 = new JMenu("Gr\u00E1ficos");
-		menuBar.add(mnNewMenu_2);
+		JMenu mnNewMenu_5 = new JMenu("Clientes");
+		menuBar.add(mnNewMenu_5);
 		
-		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Cantidad de Productos");
-		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_13 = new JMenuItem("Agregar Clientes");
+		mntmNewMenuItem_13.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CallGrafProd();
+				CallCliAdd();
 			}
 		});
-		mnNewMenu_2.add(mntmNewMenuItem_6);
+		mnNewMenu_5.add(mntmNewMenuItem_13);
+		
+		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Buscar Clientes");
+		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliBuscar();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_6);
+		
+		
+		JMenuItem mntmNewMenuItem_14 = new JMenuItem("Actualizar Clientes");
+		mntmNewMenuItem_14.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliUpd();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_14);
 		
 		JMenu mnNewMenu_3 = new JMenu("Reportes");
 		menuBar.add(mnNewMenu_3);
@@ -175,7 +205,13 @@ public class ProvUpd extends JFrame {
 			}
 		});
 		mnNewMenu_4.add(mntmNewMenuItem_11);
-		
+		JMenuItem mntmNewMenuItem_15 = new JMenuItem("Generar Venta");
+		mntmNewMenuItem_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallVenta();
+			}
+		});
+		mnNewMenu_4.add(mntmNewMenuItem_15);
 		JMenuItem mntmNewMenuItem_12 = new JMenuItem("Agregar Usuarios");
 		mntmNewMenuItem_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -187,33 +223,55 @@ public class ProvUpd extends JFrame {
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
 		panel.setBackground(new Color(255, 255, 224));
-		panel.setBounds(50, 208, 739, 268);
+		panel.setBounds(50, 208, 517, 215);
 		contentPane.add(panel);
 		
-		JButton btnElegirProveedor = new JButton("Elegir Proveedor");
-		btnElegirProveedor.setBounds(489, 103, 200, 40);
-		panel.add(btnElegirProveedor);
+		JComboBox<String> ProveedorBox = new JComboBox<String>();
+		ProveedorBox.setBounds(246, 72, 210, 22);
+		panel.add(ProveedorBox);
+		ProveedorBox.removeAllItems();
+		ArrayList<String> lista = new ArrayList<String>();
+		lista = SqlUsuarios.llenar_prov();
+		for(int i = 0; i<lista.size();i++) {
+			ProveedorBox.addItem(lista.get(i));
+		}
 		
-		JLabel lblNewLabel_2_1_1 = new JLabel("Producto que Provee:");
-		lblNewLabel_2_1_1.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		lblNewLabel_2_1_1.setBounds(70, 158, 164, 16);
-		panel.add(lblNewLabel_2_1_1);
+		JButton btnElegirProveedor = new JButton("Elegir Proveedor");
+		btnElegirProveedor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				SqlUsuarios modsql = new SqlUsuarios();
+				PrintWriter w;
+				try {
+					String name = (String) ProveedorBox.getSelectedItem();
+					w = new PrintWriter(new FileWriter("prov.txt"));
+					w.println(name);
+					w.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				CallUpdProv();
+			}
+		});
+		btnElegirProveedor.setBounds(137, 132, 200, 40);
+		panel.add(btnElegirProveedor);
 		
 		JLabel lblNewLabel_2_2 = new JLabel("Empresa:");
 		lblNewLabel_2_2.setFont(new Font("Times New Roman", Font.PLAIN, 17));
 		lblNewLabel_2_2.setBounds(70, 71, 86, 22);
 		panel.add(lblNewLabel_2_2);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(246, 158, 210, 22);
-		panel.add(comboBox);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(246, 72, 210, 22);
-		panel.add(comboBox_1);
 	}
 	void CallProdAdd() {
-		ProvAdd obj = new ProvAdd();
+		ProdAdd obj = new ProdAdd();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallUpdProv() {
+		UpdProv obj = new UpdProv();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
@@ -223,6 +281,12 @@ public class ProvUpd extends JFrame {
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
+	}
+	void CallCatAdd() {
+		CatAdd obj = new CatAdd();
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
 	}
 	void CallProdUpd() {
 		ProdUpd obj = new ProdUpd();
@@ -244,12 +308,6 @@ public class ProvUpd extends JFrame {
 	}
 	void CallProvUpd() {
 		ProvUpd obj = new ProvUpd();
-		this.setVisible(false);
-		obj.setVisible(true);
-		obj.setLocationRelativeTo(null);
-	}
-	void CallGrafProd() {
-		GrafProd obj = new GrafProd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
@@ -286,6 +344,31 @@ public class ProvUpd extends JFrame {
 	}
 	void CallRegistro() {
 		Registro obj = new Registro();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallVenta() {
+		Venta obj = new Venta();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
+	}
+	void CallCliAdd() {
+		CliAdd obj = new CliAdd();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliBuscar() {
+		CliBuscar obj = new CliBuscar();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliUpd() {
+		CliUpd obj = new CliUpd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);

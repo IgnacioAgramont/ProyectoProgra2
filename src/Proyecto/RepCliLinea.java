@@ -15,6 +15,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import Clases.CatAdd;
+
 import javax.swing.JTextPane;
 
 public class RepCliLinea extends JFrame {
@@ -72,6 +75,11 @@ public class RepCliLinea extends JFrame {
 		menuBar.add(mnNewMenu);
 		
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Agregar Productos");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallProdAdd();
+			}
+		});
 		mnNewMenu.add(mntmNewMenuItem_2);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("Buscar Productos");
@@ -117,16 +125,33 @@ public class RepCliLinea extends JFrame {
 		});
 		mnNewMenu_1.add(mntmNewMenuItem_5);
 		
-		JMenu mnNewMenu_2 = new JMenu("Gr\u00E1ficos");
-		menuBar.add(mnNewMenu_2);
+		JMenu mnNewMenu_5 = new JMenu("Clientes");
+		menuBar.add(mnNewMenu_5);
 		
-		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Cantidad de Productos");
-		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_13 = new JMenuItem("Agregar Clientes");
+		mntmNewMenuItem_13.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CallGrafProd();
+				CallCliAdd();
 			}
 		});
-		mnNewMenu_2.add(mntmNewMenuItem_6);
+		mnNewMenu_5.add(mntmNewMenuItem_13);
+		
+		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Buscar Clientes");
+		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliBuscar();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_6);
+		
+		
+		JMenuItem mntmNewMenuItem_14 = new JMenuItem("Actualizar Clientes");
+		mntmNewMenuItem_14.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliUpd();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_14);
 		
 		JMenu mnNewMenu_3 = new JMenu("Reportes");
 		menuBar.add(mnNewMenu_3);
@@ -156,7 +181,6 @@ public class RepCliLinea extends JFrame {
 		mnNewMenu_3.add(mntmNewMenuItem_9);
 		
 		JMenuItem mntmNewMenuItem_10 = new JMenuItem("Clientes por Linea  de Producto");
-		mntmNewMenuItem_10.setEnabled(false);
 		mntmNewMenuItem_10.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CallRepCliLinea();
@@ -188,7 +212,7 @@ public class RepCliLinea extends JFrame {
 		contentPane.add(textPane);
 	}
 	void CallProdAdd() {
-		ProvAdd obj = new ProvAdd();
+		ProdAdd obj = new ProdAdd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
@@ -198,6 +222,12 @@ public class RepCliLinea extends JFrame {
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
+	}
+	void CallCatAdd() {
+		CatAdd obj = new CatAdd();
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
 	}
 	void CallProdUpd() {
 		ProdUpd obj = new ProdUpd();
@@ -219,12 +249,6 @@ public class RepCliLinea extends JFrame {
 	}
 	void CallProvUpd() {
 		ProvUpd obj = new ProvUpd();
-		this.setVisible(false);
-		obj.setVisible(true);
-		obj.setLocationRelativeTo(null);
-	}
-	void CallGrafProd() {
-		GrafProd obj = new GrafProd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
@@ -261,6 +285,24 @@ public class RepCliLinea extends JFrame {
 	}
 	void CallRegistro() {
 		Registro obj = new Registro();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliAdd() {
+		CliAdd obj = new CliAdd();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliBuscar() {
+		CliBuscar obj = new CliBuscar();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliUpd() {
+		CliUpd obj = new CliUpd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);

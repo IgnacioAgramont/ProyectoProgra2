@@ -6,12 +6,10 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -21,24 +19,18 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.Statement;
-
-import BD.Conexion;
 import BD.SqlUsuarios;
 import Clases.CatAdd;
+import Clases.Cliente;
 
-import javax.swing.JTextPane;
+import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import javax.swing.JTable;
 
-public class RepCliVen extends JFrame {
+public class CliUpd extends JFrame {
 
 	private JPanel contentPane;
-	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -47,7 +39,7 @@ public class RepCliVen extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RepCliVen frame = new RepCliVen();
+					CliUpd frame = new CliUpd();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -59,9 +51,9 @@ public class RepCliVen extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public RepCliVen() {
+	public CliUpd() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 585, 468);
+		setBounds(100, 100, 629, 542);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(123, 104, 238));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -214,7 +206,13 @@ public class RepCliVen extends JFrame {
 			}
 		});
 		mnNewMenu_4.add(mntmNewMenuItem_11);
-		
+		JMenuItem mntmNewMenuItem_15 = new JMenuItem("Generar Venta");
+		mntmNewMenuItem_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallVenta();
+			}
+		});
+		mnNewMenu_4.add(mntmNewMenuItem_15);
 		JMenuItem mntmNewMenuItem_12 = new JMenuItem("Agregar Usuarios");
 		mntmNewMenuItem_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -223,52 +221,57 @@ public class RepCliVen extends JFrame {
 		});
 		mnNewMenu_4.add(mntmNewMenuItem_12);
 		
-		BufferedReader w;
-		int usuario = 0;
-		try {
-			w = new BufferedReader(new FileReader("user.txt"));
-			usuario = Integer.parseInt(w.readLine());
-		} catch (NumberFormatException | IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+		JPanel panel = new JPanel();
+		panel.setLayout(null);
+		panel.setBackground(new Color(255, 255, 224));
+		panel.setBounds(50, 189, 504, 263);
+		contentPane.add(panel);
+		
+		JComboBox<String> ClienteBox = new JComboBox<String>();
+		ClienteBox.setBounds(193, 84, 211, 25);
+		panel.add(ClienteBox);
+		ClienteBox.removeAllItems();
+		ArrayList<String> lista = new ArrayList<String>();
+		lista = SqlUsuarios.llenar_cli();
+		for(int i = 0; i<lista.size();i++) {
+			ClienteBox.addItem(lista.get(i));
 		}
 		
-		JLabel lbl = new JLabel("");
-		lbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lbl.setBounds(111, 377, 365, 41);
-		contentPane.add(lbl);
+		JLabel lblNewLabel_2_2 = new JLabel("Nombre:");
+		lblNewLabel_2_2.setFont(new Font("Times New Roman", Font.PLAIN, 17));
+		lblNewLabel_2_2.setBounds(48, 84, 86, 22);
+		panel.add(lblNewLabel_2_2);
 		
-		table = new JTable();
-		table.setBounds(111, 210, 371, 154);
-		contentPane.add(table);
-		
-		Connection con = Conexion.getConexion();
-		Statement st;
-		String sql = "select distinct a.Nombre from Cliente a, Ventas b where b.idEmpleado = "+usuario;
-		
-		DefaultTableModel model = new DefaultTableModel();
-		int c=0;
-		model.addColumn("Cliente");
-		table.setModel(model);
-		String []dato = new String[1];
-		try {
-			st = (Statement) con.createStatement();
-			ResultSet result = st.executeQuery(sql);
-			while(result.next()) {
-				dato[0]=result.getString(1);
-				model.addRow(dato);
-				c++;
+		JButton btnActulizarCliente = new JButton("Actualizar Cliente");
+		btnActulizarCliente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SqlUsuarios modsql = new SqlUsuarios();
+				PrintWriter w;
+				try {
+					String name = (String) ClienteBox.getSelectedItem();
+					w = new PrintWriter(new FileWriter("cli.txt"));
+					w.println(name);
+					w.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				CallUpdCli();
 			}
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		String Num = Integer.toString(c);
-		lbl.setText(Num+" Clientes para el empleado "+usuario);
+		});
+		btnActulizarCliente.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		btnActulizarCliente.setBounds(131, 157, 174, 39);
+		panel.add(btnActulizarCliente);
 	}
-
 	void CallProdAdd() {
 		ProdAdd obj = new ProdAdd();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallUpdCli() {
+		UpdCli obj = new UpdCli();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
@@ -344,6 +347,13 @@ public class RepCliVen extends JFrame {
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
+	}
+	void CallVenta() {
+		Venta obj = new Venta();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
 	}
 	void CallCliAdd() {
 		CliAdd obj = new CliAdd();

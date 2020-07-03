@@ -25,7 +25,6 @@ public class Registro extends JFrame {
 	private JTextField NameField;
 	private JTextField UserField;
 	private JPasswordField PassField;
-	private JTextField CorreoField;
 	private JTextField CelField;
 	private JPasswordField ConPassField;
 
@@ -80,7 +79,7 @@ public class Registro extends JFrame {
 
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setFont(new Font("Times New Roman", Font.PLAIN, 27));
-		lblContrasea.setBounds(169, 333, 145, 41);
+		lblContrasea.setBounds(169, 356, 145, 41);
 		contentPane.add(lblContrasea);
 
 		NameField = new JTextField();
@@ -90,37 +89,27 @@ public class Registro extends JFrame {
 
 		UserField = new JTextField();
 		UserField.setColumns(10);
-		UserField.setBounds(340, 286, 216, 28);
+		UserField.setBounds(340, 312, 216, 28);
 		contentPane.add(UserField);
-
-		JLabel lblCorreo = new JLabel("Correo:");
-		lblCorreo.setFont(new Font("Times New Roman", Font.PLAIN, 27));
-		lblCorreo.setBounds(169, 468, 145, 41);
-		contentPane.add(lblCorreo);
 
 		JLabel lblUsuario_1 = new JLabel("Usuario:");
 		lblUsuario_1.setFont(new Font("Times New Roman", Font.PLAIN, 27));
-		lblUsuario_1.setBounds(169, 276, 123, 41);
+		lblUsuario_1.setBounds(169, 302, 123, 41);
 		contentPane.add(lblUsuario_1);
 
 		PassField = new JPasswordField();
 		PassField.setColumns(10);
-		PassField.setBounds(340, 346, 216, 28);
+		PassField.setBounds(340, 369, 216, 28);
 		contentPane.add(PassField);
-
-		CorreoField = new JTextField();
-		CorreoField.setColumns(10);
-		CorreoField.setBounds(340, 481, 216, 28);
-		contentPane.add(CorreoField);
 
 		JLabel lblCelular = new JLabel("Celular:");
 		lblCelular.setFont(new Font("Times New Roman", Font.PLAIN, 27));
-		lblCelular.setBounds(169, 517, 123, 41);
+		lblCelular.setBounds(169, 491, 123, 41);
 		contentPane.add(lblCelular);
 
 		CelField = new JTextField();
 		CelField.setColumns(10);
-		CelField.setBounds(340, 530, 216, 28);
+		CelField.setBounds(340, 504, 216, 28);
 		contentPane.add(CelField);
 
 		JButton btnNewButton = new JButton("Finalizar Registro");
@@ -135,20 +124,19 @@ public class Registro extends JFrame {
 				if (pass.equals(passCon)) {
 					String nuevoPass = HidePass.sha1(pass);
 					int celular = Integer.parseInt(CelField.getText());
-					mod.setUsuario(UserField.getText());
+					int usuario = Integer.parseInt(UserField.getText());
+					mod.setIdUsuario(usuario);
 					mod.setPassword(nuevoPass);
 					mod.setNombre(NameField.getText());
 					mod.setCelular(celular);
-					mod.setCorreo(CorreoField.getText());
-
 					if (modsql.registrar(mod)) {
 						JOptionPane.showMessageDialog(null, "Registro completado", "Done",
 								JOptionPane.INFORMATION_MESSAGE);
+						NameField.setText("");
 						UserField.setText("");
 						PassField.setText("");
 						ConPassField.setText("");
 						CelField.setText("");
-						CorreoField.setText("");
 					} else {
 						JOptionPane.showMessageDialog(null, "Error al guardar", "Verifique", JOptionPane.ERROR_MESSAGE);
 					}
@@ -167,13 +155,17 @@ public class Registro extends JFrame {
 
 		ConPassField = new JPasswordField();
 		ConPassField.setColumns(10);
-		ConPassField.setBounds(340, 413, 216, 28);
+		ConPassField.setBounds(340, 436, 216, 28);
 		contentPane.add(ConPassField);
 
 		JLabel lblContrasea_1 = new JLabel("<html>Confirmar <br>Contrase\u00F1a:</html>");
 		lblContrasea_1.setFont(new Font("Times New Roman", Font.PLAIN, 27));
-		lblContrasea_1.setBounds(169, 387, 145, 68);
+		lblContrasea_1.setBounds(169, 410, 145, 68);
 		contentPane.add(lblContrasea_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("El usuario debe ser el CI");
+		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		lblNewLabel_2.setBounds(169, 273, 216, 16);
+		contentPane.add(lblNewLabel_2);
 	}
-
 }

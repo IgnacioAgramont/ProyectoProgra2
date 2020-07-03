@@ -1,13 +1,16 @@
 package Clases;
 
-public class Empresa {
+public class Cliente {
+	private int cod;
 	private String Nombre;
 	private String Direccion;
-	private int Telefono;
-	public Empresa(String Nombre, String Direccion, int Telefono) {
-		this.Nombre = Nombre;
-		this.Direccion = Direccion;
-		this.Telefono = Telefono;
+	private int Celular;
+	
+	public int getCod() {
+		return cod;
+	}
+	public void setCod(int cod) {
+		this.cod = cod;
 	}
 	public String getNombre() {
 		return Nombre;
@@ -15,8 +18,8 @@ public class Empresa {
 	public String getDireccion() {
 		return Direccion;
 	}
-	public int getTelefono() {
-		return Telefono;
+	public int getCelular() {
+		return Celular;
 	}
 	public void setNombre(String nombre) {
 		Nombre = nombre;
@@ -24,8 +27,9 @@ public class Empresa {
 	public void setDireccion(String direccion) {
 		Direccion = direccion;
 	}
-	public void setTelefono(int telefono) {
-		Telefono = telefono;
+	public void setCelular(int celular) {
+		Celular = celular;
 	}
+	
 	
 }

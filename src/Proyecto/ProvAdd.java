@@ -1,30 +1,32 @@
 package Proyecto;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import BD.SqlUsuarios;
+import Clases.CatAdd;
+import Clases.Proveedores;
 import javax.swing.JButton;
 import javax.swing.JTextField;
-import javax.swing.JComboBox;
 
 public class ProvAdd extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_2;
-	private JTextField textField_3;
+	private JTextField DireccionField;
+	private JTextField CelularField;
+	private JTextField EmpresaField;
 
 	/**
 	 * Launch the application.
@@ -77,6 +79,11 @@ public class ProvAdd extends JFrame {
 		menuBar.add(mnNewMenu);
 		
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Agregar Productos");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallProdAdd();
+			}
+		});
 		mnNewMenu.add(mntmNewMenuItem_2);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("Buscar Productos");
@@ -99,7 +106,6 @@ public class ProvAdd extends JFrame {
 		menuBar.add(mnNewMenu_1);
 		
 		JMenuItem mntmNewMenuItem_3 = new JMenuItem("Agregar Proveedores");
-		mntmNewMenuItem_3.setEnabled(false);
 		mntmNewMenuItem_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CallProvAdd();
@@ -123,16 +129,33 @@ public class ProvAdd extends JFrame {
 		});
 		mnNewMenu_1.add(mntmNewMenuItem_5);
 		
-		JMenu mnNewMenu_2 = new JMenu("Gr\u00E1ficos");
-		menuBar.add(mnNewMenu_2);
+		JMenu mnNewMenu_5 = new JMenu("Clientes");
+		menuBar.add(mnNewMenu_5);
 		
-		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Cantidad de Productos");
-		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_13 = new JMenuItem("Agregar Clientes");
+		mntmNewMenuItem_13.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CallGrafProd();
+				CallCliAdd();
 			}
 		});
-		mnNewMenu_2.add(mntmNewMenuItem_6);
+		mnNewMenu_5.add(mntmNewMenuItem_13);
+		
+		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Buscar Clientes");
+		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliBuscar();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_6);
+		
+		
+		JMenuItem mntmNewMenuItem_14 = new JMenuItem("Actualizar Clientes");
+		mntmNewMenuItem_14.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliUpd();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_14);
 		
 		JMenu mnNewMenu_3 = new JMenu("Reportes");
 		menuBar.add(mnNewMenu_3);
@@ -179,7 +202,13 @@ public class ProvAdd extends JFrame {
 			}
 		});
 		mnNewMenu_4.add(mntmNewMenuItem_11);
-		
+		JMenuItem mntmNewMenuItem_15 = new JMenuItem("Generar Venta");
+		mntmNewMenuItem_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallVenta();
+			}
+		});
+		mnNewMenu_4.add(mntmNewMenuItem_15);
 		JMenuItem mntmNewMenuItem_12 = new JMenuItem("Agregar Usuarios");
 		mntmNewMenuItem_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -195,47 +224,59 @@ public class ProvAdd extends JFrame {
 		contentPane.add(panel);
 		
 		JButton btnAgregarProveedor = new JButton("Agregar Proveedor");
-		btnAgregarProveedor.setBounds(489, 103, 200, 40);
+		btnAgregarProveedor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				SqlUsuarios modsql = new SqlUsuarios();
+				Proveedores mod = new Proveedores();
+				
+				int celular = Integer.parseInt(CelularField.getText());
+				mod.setCelular(celular);
+				mod.setDireccion(DireccionField.getText());
+				mod.setEmpresa(EmpresaField.getText());
+				
+				if(modsql.RegProv(mod)) {
+					JOptionPane.showMessageDialog(null, "Proveedor Agregado Exitosamente", "Done",
+							JOptionPane.INFORMATION_MESSAGE);
+					CelularField.setText("");
+					DireccionField.setText("");
+					EmpresaField.setText("");
+				}else {
+					JOptionPane.showMessageDialog(null, "Error al guardar", "Verifique", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		btnAgregarProveedor.setBounds(490, 112, 200, 40);
 		panel.add(btnAgregarProveedor);
 		
 		JLabel lblNewLabel_2_1 = new JLabel("Direccion:");
 		lblNewLabel_2_1.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		lblNewLabel_2_1.setBounds(70, 89, 142, 22);
+		lblNewLabel_2_1.setBounds(73, 120, 142, 22);
 		panel.add(lblNewLabel_2_1);
 		
-		textField = new JTextField();
-		textField.setColumns(10);
-		textField.setBounds(246, 89, 210, 22);
-		panel.add(textField);
-		
-		JLabel lblNewLabel_2_1_1 = new JLabel("Producto que Provee:");
-		lblNewLabel_2_1_1.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		lblNewLabel_2_1_1.setBounds(70, 195, 164, 16);
-		panel.add(lblNewLabel_2_1_1);
+		DireccionField = new JTextField();
+		DireccionField.setColumns(10);
+		DireccionField.setBounds(249, 120, 210, 22);
+		panel.add(DireccionField);
 		
 		JLabel lblNewLabel_2_2 = new JLabel("Empresa:");
 		lblNewLabel_2_2.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		lblNewLabel_2_2.setBounds(70, 40, 86, 22);
+		lblNewLabel_2_2.setBounds(73, 71, 86, 22);
 		panel.add(lblNewLabel_2_2);
 		
 		JLabel lblNewLabel_2_1_2 = new JLabel("Celular:");
 		lblNewLabel_2_1_2.setFont(new Font("Times New Roman", Font.PLAIN, 17));
-		lblNewLabel_2_1_2.setBounds(70, 139, 142, 22);
+		lblNewLabel_2_1_2.setBounds(73, 170, 142, 22);
 		panel.add(lblNewLabel_2_1_2);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(246, 139, 210, 22);
-		panel.add(textField_2);
+		CelularField = new JTextField();
+		CelularField.setColumns(10);
+		CelularField.setBounds(249, 170, 210, 22);
+		panel.add(CelularField);
 		
-		textField_3 = new JTextField();
-		textField_3.setColumns(10);
-		textField_3.setBounds(246, 41, 210, 22);
-		panel.add(textField_3);
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(246, 195, 210, 22);
-		panel.add(comboBox);
+		EmpresaField = new JTextField();
+		EmpresaField.setColumns(10);
+		EmpresaField.setBounds(249, 72, 210, 22);
+		panel.add(EmpresaField);
 		
 		JLabel lblNewLabel_2 = new JLabel("Categor\u00EDa:");
 		lblNewLabel_2.setFont(new Font("Times New Roman", Font.PLAIN, 17));
@@ -243,7 +284,7 @@ public class ProvAdd extends JFrame {
 		contentPane.add(lblNewLabel_2);
 	}
 	void CallProdAdd() {
-		ProvAdd obj = new ProvAdd();
+		ProdAdd obj = new ProdAdd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
@@ -253,6 +294,12 @@ public class ProvAdd extends JFrame {
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
+	}
+	void CallCatAdd() {
+		CatAdd obj = new CatAdd();
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
 	}
 	void CallProdUpd() {
 		ProdUpd obj = new ProdUpd();
@@ -278,12 +325,6 @@ public class ProvAdd extends JFrame {
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
 	}
-	void CallGrafProd() {
-		GrafProd obj = new GrafProd();
-		this.setVisible(false);
-		obj.setVisible(true);
-		obj.setLocationRelativeTo(null);
-	}
 	void CallRepCliCanalDis() {
 		RepCliCanalDis obj = new RepCliCanalDis();
 		this.setVisible(false);
@@ -295,6 +336,13 @@ public class ProvAdd extends JFrame {
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
+	}
+	void CallVenta() {
+		Venta obj = new Venta();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
 	}
 	void CallRepCliSeg() {
 		RepCliSeg obj = new RepCliSeg();
@@ -316,6 +364,24 @@ public class ProvAdd extends JFrame {
 	}
 	void CallRegistro() {
 		Registro obj = new Registro();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliAdd() {
+		CliAdd obj = new CliAdd();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliBuscar() {
+		CliBuscar obj = new CliBuscar();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliUpd() {
+		CliUpd obj = new CliUpd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);

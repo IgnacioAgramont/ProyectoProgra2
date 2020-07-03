@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -13,8 +14,14 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import BD.SqlUsuarios;
+import Clases.CatAdd;
+import Clases.Proveedores;
+
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -22,7 +29,7 @@ import javax.swing.JComboBox;
 public class ProvBuscar extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField_2;
+	private JTextField EmpresaTF;
 
 	/**
 	 * Launch the application.
@@ -75,6 +82,11 @@ public class ProvBuscar extends JFrame {
 		menuBar.add(mnNewMenu);
 		
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Agregar Productos");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallProdAdd();
+			}
+		});
 		mnNewMenu.add(mntmNewMenuItem_2);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("Buscar Productos");
@@ -105,7 +117,6 @@ public class ProvBuscar extends JFrame {
 		mnNewMenu_1.add(mntmNewMenuItem_3);
 		
 		JMenuItem mntmNewMenuItem_4 = new JMenuItem("Buscar Proveedores");
-		mntmNewMenuItem_4.setEnabled(false);
 		mntmNewMenuItem_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CallProvBuscar();
@@ -121,16 +132,33 @@ public class ProvBuscar extends JFrame {
 		});
 		mnNewMenu_1.add(mntmNewMenuItem_5);
 		
-		JMenu mnNewMenu_2 = new JMenu("Gr\u00E1ficos");
-		menuBar.add(mnNewMenu_2);
+		JMenu mnNewMenu_5 = new JMenu("Clientes");
+		menuBar.add(mnNewMenu_5);
 		
-		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Cantidad de Productos");
-		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+		JMenuItem mntmNewMenuItem_13 = new JMenuItem("Agregar Clientes");
+		mntmNewMenuItem_13.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CallGrafProd();
+				CallCliAdd();
 			}
 		});
-		mnNewMenu_2.add(mntmNewMenuItem_6);
+		mnNewMenu_5.add(mntmNewMenuItem_13);
+		
+		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Buscar Clientes");
+		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliBuscar();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_6);
+		
+		
+		JMenuItem mntmNewMenuItem_14 = new JMenuItem("Actualizar Clientes");
+		mntmNewMenuItem_14.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallCliUpd();
+			}
+		});
+		mnNewMenu_5.add(mntmNewMenuItem_14);
 		
 		JMenu mnNewMenu_3 = new JMenu("Reportes");
 		menuBar.add(mnNewMenu_3);
@@ -177,7 +205,13 @@ public class ProvBuscar extends JFrame {
 			}
 		});
 		mnNewMenu_4.add(mntmNewMenuItem_11);
-		
+		JMenuItem mntmNewMenuItem_15 = new JMenuItem("Generar Venta");
+		mntmNewMenuItem_15.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CallVenta();
+			}
+		});
+		mnNewMenu_4.add(mntmNewMenuItem_15);
 		JMenuItem mntmNewMenuItem_12 = new JMenuItem("Agregar Usuarios");
 		mntmNewMenuItem_12.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -192,7 +226,44 @@ public class ProvBuscar extends JFrame {
 		panel.setBounds(51, 208, 739, 268);
 		contentPane.add(panel);
 		
+		JComboBox<String> ProductoBox = new JComboBox<String>();
+		ProductoBox.setBounds(246, 158, 210, 22);
+		panel.add(ProductoBox);
+		ProductoBox.removeAllItems();
+		ArrayList<String> lista = new ArrayList<String>();
+		lista = SqlUsuarios.llenar_prod();
+		for(int i = 0; i<lista.size();i++) {
+			ProductoBox.addItem(lista.get(i));
+		}
+		
 		JButton btnBuscarProveedor = new JButton("Buscar Proveedor");
+		btnBuscarProveedor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SqlUsuarios modsql = new SqlUsuarios();
+				Proveedores mod = new Proveedores();
+				
+				String producto = (String) ProductoBox.getSelectedItem();
+				mod.setEmpresa(EmpresaTF.getText());
+				mod.setIdProveedor(modsql.getproducto(producto));
+				String cad = modsql.BuscarProv(mod);
+				String [] array = cad.split(";");
+				if(array.length < 2) {
+					JOptionPane.showMessageDialog(null, "El Proveedor no está registrado o no se encuentra, verifique");
+				}else {
+					int idProveedor = Integer.parseInt(array[0]);
+					String Empresa = array[1];
+					String Direccion = array[2];
+					int Celular = Integer.parseInt(array[3]);
+					JOptionPane.showMessageDialog(null, "El Nombre de la empresa es: "+Empresa+", su Direccion es: "+Direccion+" y su numero de contacto es: "+Celular,"Encontrado",JOptionPane.INFORMATION_MESSAGE);
+					
+				}
+				EmpresaTF.setText("");
+				
+				
+				
+				
+			}
+		});
 		btnBuscarProveedor.setBounds(489, 103, 200, 40);
 		panel.add(btnBuscarProveedor);
 		
@@ -206,17 +277,15 @@ public class ProvBuscar extends JFrame {
 		lblNewLabel_2_2.setBounds(70, 71, 86, 22);
 		panel.add(lblNewLabel_2_2);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(246, 72, 210, 22);
-		panel.add(textField_2);
+		EmpresaTF = new JTextField();
+		EmpresaTF.setColumns(10);
+		EmpresaTF.setBounds(246, 72, 210, 22);
+		panel.add(EmpresaTF);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(246, 158, 210, 22);
-		panel.add(comboBox);
+			
 	}
 	void CallProdAdd() {
-		ProvAdd obj = new ProvAdd();
+		ProdAdd obj = new ProdAdd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
@@ -226,6 +295,12 @@ public class ProvBuscar extends JFrame {
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
+	}
+	void CallCatAdd() {
+		CatAdd obj = new CatAdd();
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
 	}
 	void CallProdUpd() {
 		ProdUpd obj = new ProdUpd();
@@ -251,12 +326,6 @@ public class ProvBuscar extends JFrame {
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
 	}
-	void CallGrafProd() {
-		GrafProd obj = new GrafProd();
-		this.setVisible(false);
-		obj.setVisible(true);
-		obj.setLocationRelativeTo(null);
-	}
 	void CallRepCliCanalDis() {
 		RepCliCanalDis obj = new RepCliCanalDis();
 		this.setVisible(false);
@@ -275,6 +344,13 @@ public class ProvBuscar extends JFrame {
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
 	}
+	void CallVenta() {
+		Venta obj = new Venta();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+		
+	}
 	void CallRepCliVen() {
 		RepCliVen obj = new RepCliVen();
 		this.setVisible(false);
@@ -289,6 +365,24 @@ public class ProvBuscar extends JFrame {
 	}
 	void CallRegistro() {
 		Registro obj = new Registro();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliAdd() {
+		CliAdd obj = new CliAdd();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliBuscar() {
+		CliBuscar obj = new CliBuscar();
+		this.setVisible(false);
+		obj.setVisible(true);
+		obj.setLocationRelativeTo(null);
+	}
+	void CallCliUpd() {
+		CliUpd obj = new CliUpd();
 		this.setVisible(false);
 		obj.setVisible(true);
 		obj.setLocationRelativeTo(null);
